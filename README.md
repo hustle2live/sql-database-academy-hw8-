@@ -7,7 +7,7 @@ title: Database erDiagram
     erDiagram
 
 user {
-    id ING DEFAULT PRIMARY KEY
+    id SERIAL PRIMARY KEY
     user_name
     firstname
     lastname
@@ -55,6 +55,10 @@ person {
 }
 
 favorites {
+
+}
+
+genres {
 
 }
 

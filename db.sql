@@ -1,3 +1,8 @@
+-- CREATE database movies_db;
+
+-- \connect movies_db;
+
+
 CREATE TABLE file (
     id SERIAL PRIMARY KEY,
     file_name VARCHAR(255) UNIQUE,
@@ -15,7 +20,7 @@ CREATE TABLE "user" (
     last_name VARCHAR(50),
     email VARCHAR(50) UNIQUE NOT NULL,
     password_hash VARCHAR(100) NOT NULL,
-    image_id INT REFERENCES file(id),
+    image_id INTEGER REFERENCES file(id),
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP
 );
@@ -35,7 +40,7 @@ CREATE TABLE person (
     birth_date DATE NOT NULL,
     gender gender_name,
     country_name VARCHAR REFERENCES countries(name),
-    photo_id INT REFERENCES file(id),
+    photo_id INTEGER REFERENCES file(id),
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP
 );
@@ -43,12 +48,12 @@ CREATE TABLE person (
 CREATE TABLE movie (
     id SERIAL PRIMARY KEY,
     title VARCHAR(255) UNIQUE NOT NULL,
-    poster_id INT REFERENCES file(id),
+    poster_id INTEGER REFERENCES file(id),
     about TEXT,
     budget INTEGER,
     released DATE NOT NULL,
     time_length INTERVAL NOT NULL,
-    director_id INT REFERENCES person(id),
+    director_id INTEGER REFERENCES person(id),
     country_name VARCHAR REFERENCES countries(name),
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP
@@ -61,15 +66,15 @@ CREATE TABLE character (
     name VARCHAR(100) NOT NULL,
     description TEXT,
     role actor_role,
-    person_id INT REFERENCES person(id),
+    person_id INTEGER REFERENCES person(id),
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP
 );
 
 CREATE TABLE movie_characters (
-    movie_id INT REFERENCES movie(id),
-    actor_id INT REFERENCES person(id),
-    character_id INT REFERENCES character(id),
+    movie_id INTEGER REFERENCES movie(id),
+    actor_id INTEGER REFERENCES person(id),
+    character_id INTEGER REFERENCES character(id),
     PRIMARY KEY (movie_id, actor_id, character_id)
 );
 
@@ -79,19 +84,30 @@ CREATE TABLE genres (
 );
 
 CREATE TABLE person_gallery (
-    person_id INT REFERENCES person(id) ON DELETE CASCADE,
-    picture_id INT REFERENCES file(id) ON DELETE CASCADE,
+    person_id INTEGER REFERENCES person(id) ON DELETE CASCADE,
+    picture_id INTEGER REFERENCES file(id) ON DELETE CASCADE,
     PRIMARY KEY (person_id, picture_id)
 );
 
 CREATE TABLE favorites (
-    user_id INT REFERENCES "user"(id) ON DELETE CASCADE,
-    movie_id INT REFERENCES movie(id) ON DELETE CASCADE,
+    user_id INTEGER REFERENCES "user"(id) ON DELETE CASCADE,
+    movie_id INTEGER REFERENCES movie(id) ON DELETE CASCADE,
     PRIMARY KEY (user_id, movie_id)
 );
 
 CREATE TABLE movie_genre (
-    movie_id INT REFERENCES movie(id) ON DELETE CASCADE,
-    genre_id INT REFERENCES genres(id) ON DELETE CASCADE,
+    movie_id INTEGER REFERENCES movie(id) ON DELETE CASCADE,
+    genre_id INTEGER REFERENCES genres(id) ON DELETE CASCADE,
     PRIMARY KEY (movie_id, genre_id)
 );
+
+
+-- Складання кількох зовнішніх ключів в одних таблицях:
+-- Для таблиць типу movie_characters та movie_genre, де ви створюєте зв'язки між кількома таблицями, все в порядку, але зазвичай ці зв'язки також потребують індексації для підвищення продуктивності запитів.
+
+-- Наприклад, ви можете додати індекси для цих таблиць, щоб покращити продуктивність пошуку за зовнішніми ключами:
+
+CREATE INDEX idx_movie_characters_movie_id ON movie_characters (movie_id);
+CREATE INDEX idx_movie_characters_actor_id ON movie_characters (actor_id);
+CREATE INDEX idx_movie_genre_movie_id ON movie_genre (movie_id);
+CREATE INDEX idx_movie_genre_genre_id ON movie_genre (genre_id);
